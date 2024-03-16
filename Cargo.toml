@@ -14,13 +14,11 @@ async-trait = "0.1.57"
 base64 = "0.13"
 hyper = { version = "0.14.20", features = ["client", "http1", "http2", "tcp"] }
 hyper-tls = "0.5"
-nats = "*"
-protobuf = { version = "~2.0" }
-# Add openssl-sys as a direct dependency so it can be cross compiled to
-# x86_64-unknown-linux-musl using the "vendored" feature below
-openssl-sys = "*"
 
-[features]
-# Force openssl-sys to staticly link in the openssl library. Necessary when
-# cross compiling to x86_64-unknown-linux-musl.
-vendored = ["openssl-sys/vendored"]
+#for cross compile: cargo build --release --target ... --features vendored
+#nats = "*"
+#protobuf = { version = "~2.0" }
+#openssl-sys = "*"
+
+#[features]
+#vendored = ["openssl-sys/vendored"]
