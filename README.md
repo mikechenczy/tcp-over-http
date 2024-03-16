@@ -1,5 +1,7 @@
 # 📡 TCP over HTTP
 
+Forked from stable version, changes: add https and cross compile support.
+
 ## 🥦 The Questions
 
 ### 🪃 What does it do?
