@@ -2,57 +2,47 @@
 
 ## 🥦 The Questions
 
-- #### 🪃 What does it do?
+### 🪃 What does it do?
+You can proxy TCP traffic over HTTP.
 
-  You can proxy TCP traffic over HTTP.
+An basic setup would be:
 
-  A basic setup would be:
+```
+[Your TCP target] <--TCP--  [Exit Node]
+                                 ^
+                                 |
+                               HTTP
+                                 |
+[Your TCP client] --TCP--> [Entry Node]
+```
 
-  ```
-  [Your TCP target] <--TCP-- [Exit Node]
-                                  ^
-                                  |
-                                HTTP
-                                  |
-  [Your TCP client] --TCP--> [Entry Node]
-  ```
 
-- #### 🍩 Why?
+### 🍩 Why?
+~I was bored.~  
 
-  ~~I was bored.~~
+This allows you to reach servers behind a HTTP reverse proxy.  
+Suddenly you can do SSH to a server which is behind a NGINX proxy.
 
-  This allows you to reach servers behind a HTTP reverse proxy.  
-  Suddenly you can do SSH to a server which is behind a NGINX proxy.
+If you have for example a HTTP gateway, you can now also have
+a TCP gateway.
 
-  If you have for example a HTTP gateway, you can now also have
-  a TCP gateway.
 
-- #### 🍾 Why not?
+### 🍾 Why not?
+Converting binary to base64, send it via HTTP and convert it back is
+inefficient and pretty slow.  
+Less than 10MB/s slow.
 
-  If a server only opens port 80, nobody expects you
-  to tunnel through and reach the SSH server.  
-  Security wise, no admin would want this tool on their
-  server without them knowing.
+Also, if a server only opens port 80, nobody expects you
+to tunnel through and rech the SSH server.  
+Security wise, no admin would want this tool on his/her
+server without him/her knowing.
 
-## 🌲 Installation
+This tool is more a proof of concept. Don't take it too serious.
 
-- get yourself a rust toolchain via rustup https://www.rust-lang.org/tools/install
-- go nightly: `rustup default nightly`
-- ```bash
-  cargo install --locked --git https://github.com/julianbuettner/tcp-over-http
-  ```
-
-_Note_:  
-If you want to use the stable version, checkout tag `rocket-stable`,
-which uses rocket and can be build with stable.
-
-- ```bash
-  cargo install --locked --git https://github.com/julianbuettner/tcp-over-http --tag rocket-stable
-  ```
 
 ## 🎺 Usage
 
-Replace `tcp-over-http` by `cargo run --release --`
+Replace `tcp-over-http` by `cargo run --`
 if you have not installed the binary.
 
 ```bash
@@ -60,7 +50,7 @@ tcp-over-http --help
 
 # Start our exit node to reach our SSH server (default listen localhost:8080)
 tcp-over-http exit --help
-tcp-over-http exit --target-addr localhost:22
+tcp-over-http exit --target-host localhost --target-port 22
 
 # Start our entry node (default listen localhost:1415)
 tcp-over-http entry --help
@@ -72,23 +62,22 @@ ssh localhost -p 1415
 
 ## ⌚️ Performance
 
-This package is not optimized for stability ~~or speed~~.
+This package is not optimized for stability or speed.  
 
 _Setup_
-
 ```bash
 # Terminal 0 - Netcat listening
-nc -l 1234 > /dev/null
+nc -l 1234 > /dev/zero
 
 # Terminal 1 - Exit Node
-tcp-over-http exit --target-addr localhost:1234
+tcp-over-http exit --target-host locahost --target-port 1234
 
 # Terminal 2 - Entry Node
 tcp-over-http entry --target-url http://localhost:8080/
 
-# Terminal 3 - Sending \0 data
+# Terminal 3 - Sending random data
 # Using pipeviewer (pv) to see current data rate
-time cat /dev/zero | pv | nc localhost 1415
+time dd if=/dev/random bs=1M count=1024 | pv | nc localhost 1415 -q 0
 ```
 
-### 🏅 Result: 900MiB/s vs 1.3GiB/s (nc | pv > nc)
+### 🏅 Result: 6MiB/s

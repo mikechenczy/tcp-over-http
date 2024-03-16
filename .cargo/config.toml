@@ -1,4 +1,2 @@
-#[build]
-#rustflags = ["--cfg", "tokio_unstable"]
-[env]
-RUST_TEST_NOCAPTURE = "1"
+[target.aarch64-unknown-linux-musl]
+linker = "D:/gcc/aarch64-linux-musleabi_for_i686-w64-mingw32/bin/aarch64-linux-musleabi-gcc"
